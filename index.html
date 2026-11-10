@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Train Schedule BD \u2014 Bangladesh Railway intercity times</title>
+<meta name="description" content="Offline bilingual (English / Bengali) Bangladesh Railway intercity train schedule explorer and trip planner.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="app-header">
+  <div class="header-row">
+    <div>
+      <h1 id="title" data-i18n="appTitle">Bangladesh Train Schedule</h1>
+      <p class="sub" id="subtitle" data-i18n="appSub">Intercity train times \u2014 offline, bilingual</p>
+    </div>
+    <button id="langBtn" class="lang-btn" type="button" aria-label="Switch language">\u09ac\u09be\u0982\u09b2\u09be</button>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab active" data-tab="find" role="tab" type="button" data-i18n="tabFind">Find Trains</button>
+    <button class="tab" data-tab="all" role="tab" type="button" data-i18n="tabAll">All Trains</button>
+    <button class="tab" data-tab="trips" role="tab" type="button" data-i18n="tabTrips">My Trips</button>
+    <button class="tab" data-tab="data" role="tab" type="button" data-i18n="tabData">Data</button>
+  </nav>
+</header>
+
+<main>
+  <!-- ============ FIND TRAINS ============ -->
+  <section id="tab-find" class="panel" role="tabpanel">
+    <form id="findForm" class="find-form" novalidate>
+      <div class="field">
+        <label for="fromSelect" data-i18n="from">From</label>
+        <select id="fromSelect"></select>
+      </div>
+      <button id="swapBtn" class="swap-btn" type="button" title="Swap stations" aria-label="Swap stations">&#8646;</button>
+      <div class="field">
+        <label for="toSelect" data-i18n="to">To</label>
+        <select id="toSelect"></select>
+      </div>
+      <div class="field">
+        <label for="dateInput" data-i18n="date">Travel date</label>
+        <input id="dateInput" type="date" required>
+      </div>
+      <button id="findBtn" class="primary-btn" type="submit" data-i18n="findBtn">Find trains</button>
+    </form>
+    <p id="findError" class="error" hidden></p>
+    <p id="findSummary" class="summary" hidden></p>
+    <div id="findResults" class="results"></div>
+    <p id="findEmpty" class="empty" hidden data-i18n="noTrains">No direct trains on this route.</p>
+  </section>
+
+  <!-- ============ ALL TRAINS ============ -->
+  <section id="tab-all" class="panel" hidden role="tabpanel">
+    <input id="searchInput" class="search" type="search" data-i18n-ph="searchPh" placeholder="Search by name or number\u2026" aria-label="Search trains">
+    <div id="corridorChips" class="chips" role="group" aria-label="Corridor filter"></div>
+    <p id="allCount" class="summary"></p>
+    <div id="allList" class="results"></div>
+  </section>
+
+  <!-- ============ MY TRIPS ============ -->
+  <section id="tab-trips" class="panel" hidden role="tabpanel">
+    <form id="tripForm" class="trip-form" novalidate>
+      <div class="field">
+        <label for="tripService" data-i18n="service">Train</label>
+        <select id="tripService"></select>
+      </div>
+      <div class="field">
+        <label for="tripDate" data-i18n="date">Travel date</label>
+        <input id="tripDate" type="date" required>
+      </div>
+      <div class="field">
+        <label for="tripClass" data-i18n="seatClass">Seat class</label>
+        <select id="tripClass"></select>
+      </div>
+      <div class="field">
+        <label for="tripPnr" data-i18n="pnr">PNR (optional)</label>
+        <input id="tripPnr" type="text" maxlength="20" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="tripNote" data-i18n="note">Note (optional)</label>
+        <input id="tripNote" type="text" maxlength="200" autocomplete="off">
+      </div>
+      <button id="addTripBtn" class="primary-btn" type="submit" data-i18n="addTrip">Add trip</button>
+    </form>
+    <p id="tripError" class="error" hidden></p>
+    <p id="tripMsg" class="ok-msg" hidden></p>
+    <div id="tripList" class="results"></div>
+    <p id="tripsEmpty" class="empty" data-i18n="noTrips">No saved trips yet. Add one above or save a train from Find Trains.</p>
+  </section>
+
+  <!-- ============ DATA ============ -->
+  <section id="tab-data" class="panel" hidden role="tabpanel">
+    <h2 data-i18n="tabData">Data</h2>
+    <div class="data-block">
+      <button id="exportBtn" class="primary-btn" type="button" data-i18n="exportBtn">Download JSON backup</button>
+      <p id="exportMsg" class="ok-msg" hidden></p>
+    </div>
+    <div class="data-block">
+      <label for="importText" data-i18n="importPh">Paste a train-schedule-bd JSON backup here\u2026</label>
+      <textarea id="importText" rows="6" spellcheck="false"></textarea>
+      <div class="row">
+        <button id="importBtn" class="primary-btn" type="button" data-i18n="importBtn">Import</button>
+        <label class="file-label" for="importFile" data-i18n="chooseFile">Or choose a backup file:</label>
+        <input id="importFile" type="file" accept="application/json,.json">
+      </div>
+      <p id="importOk" class="ok-msg" hidden></p>
+      <p id="importFail" class="error" hidden></p>
+    </div>
+    <div class="data-block danger">
+      <label for="eraseInput" data-i18n="eraseHint">Type DELETE to erase all saved trips.</label>
+      <div class="row">
+        <input id="eraseInput" type="text" autocomplete="off" placeholder="DELETE">
+        <button id="eraseBtn" class="danger-btn" type="button" data-i18n="eraseBtn">Erase all data</button>
+      </div>
+      <p id="eraseWrong" class="error" hidden></p>
+      <p id="erasedMsg" class="ok-msg" hidden></p>
+    </div>
+    <div class="data-block sources">
+      <h3 data-i18n="sourcesTitle">Sources &amp; accuracy</h3>
+      <ul>
+        <li>Bangladesh Railway Time Table No. 54 (effective 10 Mar 2025).</li>
+        <li>Cross-checked Nov 2026 against trainjatri, insidedhaka, websylhet, albangladesh, gojatra, amadertrain, bdtraineticket. Where sources disagree, the value used is noted in DATA_NOTES.md.</li>
+        <li>No live running status and no fares are shown \u2014 fares were not verified.</li>
+      </ul>
+      <p class="disclaimer" id="disclaimer" data-i18n="disclaimer">Timetable can change \u2014 confirm on eticket.railway.gov.bd before travelling. This app is not affiliated with Bangladesh Railway.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="app-footer">
+  <p>Train Schedule BD \u2014 offline. 39 intercity / mail / commuter services. Time Table No. 54.</p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="i18n.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
